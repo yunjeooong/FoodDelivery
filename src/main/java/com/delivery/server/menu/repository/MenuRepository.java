@@ -1,12 +1,13 @@
 package com.delivery.server.menu.repository;
 
-import java.util.List;
 import com.delivery.server.menu.domain.Menu;
-public interface MenuRepository {
-    List<Menu> findAll();
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface MenuRepository extends JpaRepository<Menu, Long> {
     List<Menu> findByMenuId(Long menuId);
     List<Menu> findByShopId(Long shopId);
-    Menu save(Menu menu);
-    void deleteByMenuId(Long menuId);
-
 }
