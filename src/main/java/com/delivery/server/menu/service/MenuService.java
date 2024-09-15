@@ -40,8 +40,12 @@ public class MenuService {
 
     public MenuDto createMenu(MenuDto menuDto) {
         Menu menu = convertToEntity(menuDto);
+        if (menu.getMenuStatus() == null) {
+            menu.setMenuStatus(Menu.MenuStatus.ACTIVE);  // 기본값을 ACTIVE로 설정
+        }
         Menu savedMenu = menuRepository.save(menu);
         return convertToDto(savedMenu);
+
     }
 
     public MenuDto updateMenu(Long menuId, MenuDto menuDto) {
@@ -50,6 +54,7 @@ public class MenuService {
                     existingMenu.setName(menuDto.getName());
                     existingMenu.setDescription(menuDto.getDescription());
                     existingMenu.setPrice(menuDto.getPrice());
+                    existingMenu.setMenuGroupId(menuDto.getMenuGroupId());
                     return convertToDto(menuRepository.save(existingMenu));
                 })
                 .orElseThrow(() -> new RuntimeException("Menu not found with id: " + menuId));
@@ -57,6 +62,24 @@ public class MenuService {
 
     public void deleteMenu(Long menuId) {
         menuRepository.deleteById(menuId);
+    }
+
+    public MenuDto updateMenuStatus(Long menuId, Menu.MenuStatus status) {
+        return menuRepository.findById(menuId)
+                .map(existingMenu -> {
+                    existingMenu.setMenuStatus(status);
+                    return convertToDto(menuRepository.save(existingMenu));
+                })
+                .orElseThrow(() -> new RuntimeException("Menu not found with id: " + menuId));
+    }
+
+    public MenuDto updateMainMenuStatus(Long menuId, boolean isMainMenu) {
+        return menuRepository.findById(menuId)
+                .map(existingMenu -> {
+                    existingMenu.setMainMenu(isMainMenu);
+                    return convertToDto(menuRepository.save(existingMenu));
+                })
+                .orElseThrow(() -> new RuntimeException("Menu not found with id: " + menuId));
     }
 
     private MenuDto convertToDto(Menu menu) {
